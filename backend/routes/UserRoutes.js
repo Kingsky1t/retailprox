@@ -1,14 +1,11 @@
 import express from 'express';
-import { userAddStore, userRegister } from '../handlers/UserHandlers.js';
+import { userAddStore, userLogin, userRegister } from '../handlers/UserHandlers.js';
 
 const router = express.Router();
 
 router.post('/register', userRegister);
 router.post('/add-store', userAddStore);
-router.get('/test', async (req, res) => {
-    console.log('testing');
-    res.send('test completed');
-});
+router.post("/login", userLogin);
 
 export default router;
     

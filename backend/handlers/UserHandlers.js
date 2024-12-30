@@ -1,18 +1,70 @@
 import { User } from '../models/UserModel.js';
 import { Store } from '../models/StoreModel.js';
+import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
 
 export const userRegister = async (req, res) => {
     const { username, email, password } = req.body;
     console.log(username, email, password)
+    if (!username || !email || !password) {
+        return res.status(400).json({ message: 'Missing data.' });
+    }
     try {
+        const isUserAlreadyExisting = await User.findOne({ email });
+        if (isUserAlreadyExisting) {
+            return res.status(400).json({ message: 'User already exists.' });
+        }
+
         const hashedPassword = await bcrypt.hash(password, 10);
         const user = new User({ username, email, password: hashedPassword });
         await user.save();
-        res.status(201).send('User registered successfully.');
+
+        const accessToken = jwt.sign({ id: user._id }, process.env.JWT_ACCESS_SECRET, { expiresIn: '1d' });
+
+        return res.status(200).json({
+            success: true,
+            message: 'User created successfully.',
+            user: {
+                username,
+                email,
+            },
+            accessToken,
+        });
     } catch (error) {
         console.error('Error registering user:', error);
-        res.status(500).send('Error registering user.');
+        return res.status(500).send('Error registering user.');
+    }
+};
+
+export const userLogin = async (req, res) => {
+    const { email, password } = req.body;
+
+    if (!email || !password) {
+        return res.status(400).json({ message: 'Missing data.' });
+    }
+
+    try {
+        const user = await User.findOne({ email });
+        if (!user) {
+            return res.status(400).json({ message: 'User does not exist.' });
+        }
+
+        const isPasswordValid = await bcrypt.compare(password, user.password);
+        if (!isPasswordValid) {
+            return res.status(400).json({ message: 'Invalid credentials.' });
+        }
+
+        const accessToken = jwt.sign({ id: user._id }, process.env.JWT_ACCESS_SECRET, { expiresIn: '1d' });
+
+        return res.status(200).json({
+            success: true,
+            message: 'User logged in successfully.',
+            user: { username: user.username, email: user.email },
+            accessToken,
+        });
+    } catch (error) {
+        console.error('Error logging in user:', error);
+        return res.status(500).json({ message: 'Error logging in user.' });
     }
 };
 

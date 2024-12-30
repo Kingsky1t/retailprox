@@ -14,16 +14,20 @@ import {
     FaUserAlt,
 } from 'react-icons/fa';
 import logo from '../assets/RetailProX logo.png';
+import { useDispatch } from 'react-redux';
+import { logout } from '../redux/UserSlice';
 
 export default function Navigation() {
+    const dispatch = useDispatch();
     return (
-        <div className="navigation-container">
-            <h2 className="px-4 border-b">
-                <Link to="/">
-                    <img src={logo} alt="RetailProX" />
-                </Link>
-            </h2>
-            <div className="flex flex-col items-start text-lg">
+            <div className="navigation-container">
+                <h2 className="px-4 border-b">
+                    <Link to="/">
+                        <img src={logo} alt="RetailProX" />
+                    </Link>
+                </h2>
+                <button onClick={() => { dispatch(logout()) }}>logout</button>
+                <div className="flex flex-col items-start text-lg grow overflow-auto scrollbar-none hide-scrollbar">
                 <Link to="/" className="w-full px-8 py-3 hover:bg-highlight flex items-center justify-start gap-4">
                     <FaHome /> Dashboard
                 </Link>
