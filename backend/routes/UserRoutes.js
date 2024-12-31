@@ -1,11 +1,10 @@
 import express from 'express';
-import { userAddStore, userLogin, userRegister } from '../handlers/UserHandlers.js';
+import { userLogin, userRegister, verifyUserToken } from '../handlers/UserHandlers.js';
 
 const router = express.Router();
 
 router.post('/register', userRegister);
-router.post('/add-store', userAddStore);
-router.post("/login", userLogin);
+router.post('/login', userLogin);
+router.post('/verify-token', verifyUserToken);
 
 export default router;
-    

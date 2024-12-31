@@ -1,7 +1,6 @@
-import { useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useState } from 'react';
+import { useDispatch } from 'react-redux';
 import { loginUser, registerUser } from '../redux/UserSlice';
-import { useNavigate } from 'react-router-dom';
 
 export default function Auth() {
     const [isShowLogin, setShowLogin] = useState(true);
@@ -96,6 +95,7 @@ function Login({ isShowLogin, setShowLogin }) {
 }
 
 function Register({ isShowLogin, setShowLogin }) {
+    const dispatch = useDispatch()
     const [formData, setFormData] = useState({
         name: '',
         email: '',

@@ -4,7 +4,6 @@ import cors from 'cors';
 import '@shopify/shopify-api/adapters/node';
 import shopifyRouter from './routes/ShopifyRoutes.js';
 import userRouter from './routes/UserRoutes.js';
-import dashboardRouter from './routes/DashboardRoutes.js';
 import { connectToMongoDb } from './lib/mongo.js';
 import cookieParser from 'cookie-parser';
 
