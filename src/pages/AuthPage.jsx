@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { loginUser, registerUser } from '../redux/UserSlice';
 
-export default function Auth() {
+export default function AuthPage() {
     const [isShowLogin, setShowLogin] = useState(true);
 
     return (

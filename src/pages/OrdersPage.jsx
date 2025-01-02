@@ -1,30 +1,30 @@
-import axios from 'axios';
-import { useEffect } from 'react';
-import { useState } from 'react';
+import React, { useEffect } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+import { fetchOrders } from './../redux/StoreSlice';
 
 export default function OrdersPage() {
-    const [orders, setOrders] = useState(null);
+    const dispatch = useDispatch();
+    const { orders, loading, error } = useSelector(state => state.orders);
+    const { activeStore } = useSelector(state => state.user);
+    const { user } = useSelector(state => state.user);
+
     const convertDate = createdAt => {
-        const newDate = Date(createdAt);
+        const newDate = new Date(createdAt);
         const d = newDate.toString().split(' ');
         return d[1] + ' ' + d[2] + ' at ' + d[4];
     };
+
     useEffect(() => {
-        axios
-            .get('http://localhost:5000/shopify/fetch-orders/676bc84d2d6a8d748016594b')
-            .then(response => {
-                console.log(response.data[0]);
-                setOrders(response.data);
-            })
-            .catch(error => {
-                console.error(error);
-            });
-    }, []);
+        dispatch(fetchOrders(activeStore.storeId));
+    }, [user, dispatch, activeStore]);
+
+    if (loading) return <p>Loading...</p>;
+    if (error) return <p>Error: {error}</p>;
 
     return (
-        <div className=" m-auto">
+        <div className="m-auto">
             <table className="w-full text-center">
-                <thead className="text-xs text-white uppercase bg-black overflow-x-auto">
+                <thead className="text-xs text-white uppercase bg-highlight overflow-x-auto">
                     <tr>
                         <th scope="col" className="px-6 py-3">
                             Order
@@ -62,34 +62,23 @@ export default function OrdersPage() {
                     </tr>
                 </thead>
                 <tbody className="text-xs">
-                    {orders &&
-                        orders.map((order, index) => (
-                            <tr key={index} className="border-b text-white dark:bg-gray-600">
-                                <td className="px-6 py-4">#{order['order_number']}</td>
-
-                                <td className="px-6 py-4">{convertDate(order['created_at'])}</td>
-
-                                <td className="px-6 py-4">{order.customer ? `${order.customer.first_name} ${order.customer.last_name}` : 'N/A'}</td>
-
-                                <td className="px-6 py-4">Online Store</td>
-
-                                <td className="px-6 py-4">₹{order['current_total_price']}</td>
-
-                                <td className="px-6 py-4">{order['financial_status']}</td>
-
-                                <td className="px-6 py-4">{order['fulfillment_status'] || 'Unfulfilled'}</td>
-
-                                <td className="px-6 py-4">
-                                    {order.line_items.length} {order.line_items.length > 1 ? 'items' : 'item'}
-                                </td>
-
-                                <td className="px-6 py-4">{/* // delivery status */}</td>
-
-                                <td className="px-6 py-4">{order.shipping_lines.length > 0 ? order.shipping_lines[0]['title'] : 'N/A'}</td>
-
-                                <td className="px-6 py-4">{order['tags']}</td>
-                            </tr>
-                        ))}
+                    {orders.map((order, index) => (
+                        <tr key={index} className="border-b text-white bg-background">
+                            <td className="px-6 py-4">#{order['order_number']}</td>
+                            <td className="px-6 py-4">{convertDate(order['created_at'])}</td>
+                            <td className="px-6 py-4">{order.customer ? `${order.customer.first_name} ${order.customer.last_name}` : 'N/A'}</td>
+                            <td className="px-6 py-4">Online Store</td>
+                            <td className="px-6 py-4">₹{order['current_total_price']}</td>
+                            <td className="px-6 py-4">{order['financial_status']}</td>
+                            <td className="px-6 py-4">{order['fulfillment_status'] || 'Unfulfilled'}</td>
+                            <td className="px-6 py-4">
+                                {order.line_items.length} {order.line_items.length > 1 ? 'items' : 'item'}
+                            </td>
+                            <td className="px-6 py-4">{/* Delivery status logic here */}</td>
+                            <td className="px-6 py-4">{order.shipping_lines.length > 0 ? order.shipping_lines[0]['title'] : 'N/A'}</td>
+                            <td className="px-6 py-4">{order['tags']}</td>
+                        </tr>
+                    ))}
                 </tbody>
             </table>
         </div>

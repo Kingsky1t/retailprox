@@ -1,20 +1,28 @@
-import { Navigate, Outlet, Route, Routes, useNavigate } from 'react-router-dom';
+import { useEffect } from 'react';
+import { Navigate, Outlet, Route, Routes } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+import { verifyUserToken } from './redux/UserSlice';
 import Navigation from './components/Navigation';
-import Dashboard from './pages/Dashboard';
+import DashboardPage from './pages/DashboardPage';
 import OrdersPage from './pages/OrdersPage';
 import ChannelsPage from './pages/ChannelsPage';
-import Products from './pages/Products';
-import Customers from './pages/Customer';
-import Auth from './pages/Auth';
+import ProductsPage from './pages/ProductsPage';
+import CustomersPage from './pages/CustomersPage';
+import AuthPage from './pages/AuthPage';
 import PageNotFound from './pages/PageNotFound';
-import { useDispatch, useSelector } from 'react-redux';
-import { useEffect } from 'react';
-import HomePage from './pages/Home';
-import { verifyUserToken } from './redux/UserSlice';
-import ChannelManage from './pages/ChannelManage';
+import HomePage from './pages/HomePage';
+import ChannelDetailsPage from './pages/ChannelDetailsPage';
+import ProfilePage from './pages/ProfilePage';
+import PosPage from './pages/PosPage';
+import LogisticsPage from './pages/LogisticsPage';
+import MarketingPage from './pages/MarketingPage';
+import GlobalAndCompliancePage from './pages/GlobalAndCompliancePage';
+import SecurityPage from './pages/SecurityPage';
+import DeveloperToolsPage from './pages/DeveloperToolsPage';
+import SupportPage from './pages/SupportPage';
 
-function ProtectedRoutes({ children }) {
-    const { user } = useSelector(state => state.user);
+function ProtectedRoutes({ user, loading }) {
+    if (loading) return 'Loading...';
     return user ? (
         <>
             <Navigation />
@@ -27,14 +35,14 @@ function ProtectedRoutes({ children }) {
     );
 }
 
-function AuthRedirect() {
-    const { user } = useSelector(state => state.user);
+function AuthRedirect({ user, loading }) {
+    if (loading) return 'Loading...';
     return user ? <Navigate to="/dashboard" replace /> : <Outlet />;
 }
 
 export default function App() {
     const dispatch = useDispatch();
-    const { user } = useSelector(state => state.user);
+    const { user, loading } = useSelector(state => state.user);
 
     useEffect(() => {
         if (!user) {
@@ -46,18 +54,26 @@ export default function App() {
         <main className="app">
             <Routes>
                 <Route path="/" element={<HomePage />} />
-                <Route path="/auth" element={<AuthRedirect />}>
-                    <Route index element={<Auth />} />
+                <Route path="/auth" element={<AuthRedirect user={user} loading={loading} />}>
+                    <Route index element={<AuthPage />} />
                 </Route>
-                <Route element={<ProtectedRoutes />}>
-                    <Route path="/dashboard" element={<Dashboard />} />
+                <Route element={<ProtectedRoutes user={user} loading={loading} />}>
+                    <Route path="/dashboard" element={<DashboardPage />} />
                     <Route path="/channels">
                         <Route index element={<ChannelsPage />} />
-                        <Route path=":channelId" element={<ChannelManage />} />
+                        <Route path=":channelId" element={<ChannelDetailsPage />} />
                     </Route>
+                    <Route path="/pos" element={<PosPage />} />
+                    <Route path="/inventory" element={<ProductsPage />} />
                     <Route path="/orders" element={<OrdersPage />} />
-                    <Route path="/products" element={<Products />} />
-                    <Route path="/customers" element={<Customers />} />
+                    <Route path="/customers" element={<CustomersPage />} />
+                    <Route path="/logistics" element={<LogisticsPage />} />
+                    <Route path="/marketing" element={<MarketingPage />} />
+                    <Route path="/global-and-compliance" element={<GlobalAndCompliancePage />} />
+                    <Route path="/security" element={<SecurityPage />} />
+                    <Route path="/developer-tools" element={<DeveloperToolsPage />} />
+                    <Route path="/support" element={<SupportPage />} />
+                    <Route path="/profile" element={<ProfilePage />} />
                     <Route path="*" element={<PageNotFound />} />
                 </Route>
             </Routes>
