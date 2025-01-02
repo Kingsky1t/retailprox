@@ -66,8 +66,8 @@ export default function Navigation() {
                     <FaCubes /> POS
                 </Link>
                 <Link
-                    to="/products"
-                    className={`w-full px-8 py-3 hover:bg-highlight flex items-center justify-start gap-4 ${isActive('/products') ? 'bg-highlight text-active' : ''}`}
+                    to="/inventory"
+                    className={`w-full px-8 py-3 hover:bg-highlight flex items-center justify-start gap-4 ${isActive('/inventory') ? 'bg-highlight text-active' : ''}`}
                 >
                     <FaClipboardList /> Inventory
                 </Link>
@@ -138,7 +138,7 @@ export default function Navigation() {
                     <div>{dropdownOpen ? <FaCaretUp /> : <FaCaretDown />}</div>
                 </div>
                 {dropdownOpen && (
-                    <div className="absolute right-5 bottom-[100%] mb-2  shadow-lg border rounded-md w-40 z-10">
+                    <div className="absolute bottom-[100%] mb-2 bg-background shadow-lg border rounded-md w-[97%] z-10">
                         <button
                             onClick={() => alert('Profile clicked')}
                             className="w-full text-left px-4 py-2 hover:bg-highlight"

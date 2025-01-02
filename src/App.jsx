@@ -35,6 +35,7 @@ function AuthRedirect() {
 export default function App() {
     const dispatch = useDispatch();
     const { user } = useSelector(state => state.user);
+    console.log("User",user);
 
     useEffect(() => {
         if (!user) {
@@ -56,7 +57,7 @@ export default function App() {
                         <Route path=":channelId" element={<ChannelManage />} />
                     </Route>
                     <Route path="/orders" element={<OrdersPage />} />
-                    <Route path="/products" element={<Products />} />
+                    <Route path="/inventory" element={<Products />} />
                     <Route path="/customers" element={<Customers />} />
                     <Route path="*" element={<PageNotFound />} />
                 </Route>
