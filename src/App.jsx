@@ -9,19 +9,10 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useEffect } from 'react';
 import HomePage from './pages/Home';
 import { verifyUserToken } from './redux/UserSlice';
-
-// function ProtectedRoutes({ children }) {
-//     const accessToken = localStorage.getItem('retailprox_accesstoken');
-//     return accessToken ? children : <Navigate to="/auth" replace />;
-// }
-
-// function AuthRedirect({ children }) {
-//     const accessToken = localStorage.getItem('retailprox_accesstoken');
-//     return accessToken ? <Navigate to="/dashboard" replace /> : children;
-// }
+import ChannelManage from './pages/ChannelManage';
 
 function ProtectedRoutes({ children }) {
-    const { user } = useSelector(state => state.user); // Trigger re-render on user state change
+    const { user } = useSelector(state => state.user);
     return user ? (
         <>
             <Navigation />
@@ -34,16 +25,14 @@ function ProtectedRoutes({ children }) {
     );
 }
 
-function AuthRedirect({ children }) {
-    const { user } = useSelector(state => state.user); // Trigger re-render on user state change
-    return user ? <Navigate to="/dashboard" replace /> : children;
+function AuthRedirect() {
+    const { user } = useSelector(state => state.user);
+    return user ? <Navigate to="/dashboard" replace /> : <Outlet />;
 }
 
 export default function App() {
-
-    const dispatch = useDispatch()
+    const dispatch = useDispatch();
     const { user } = useSelector(state => state.user);
-    console.log('user: ', user);
 
     useEffect(() => {
         if (!user) {
@@ -55,17 +44,15 @@ export default function App() {
         <main className="app">
             <Routes>
                 <Route path="/" element={<HomePage />} />
-                <Route
-                    path="/auth"
-                    element={
-                        <AuthRedirect>
-                            <Auth />
-                        </AuthRedirect>
-                    }
-                />
+                <Route path="/auth" element={<AuthRedirect />}>
+                    <Route index element={<Auth />} />
+                </Route>
                 <Route element={<ProtectedRoutes />}>
                     <Route path="/dashboard" element={<Dashboard />} />
-                    <Route path="/channels" element={<ChannelsPage />} />
+                    <Route path="/channels">
+                        <Route index element={<ChannelsPage />} />
+                        <Route path=":channelId" element={<ChannelManage />} />
+                    </Route>
                     <Route path="/orders" element={<OrdersPage />} />
                     <Route path="*" element={<PageNotFound />} />
                 </Route>

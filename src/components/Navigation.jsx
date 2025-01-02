@@ -14,21 +14,32 @@ import {
     FaUserAlt,
 } from 'react-icons/fa';
 import logo from '../assets/RetailProX logo.png';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { logout } from '../redux/UserSlice';
 
 export default function Navigation() {
+    const {
+        user: { stores },
+    } = useSelector(state => state.user);
     const dispatch = useDispatch();
     return (
-            <div className="navigation-container">
-                <h2 className="px-4 border-b">
-                    <Link to="/">
-                        <img src={logo} alt="RetailProX" />
-                    </Link>
-                </h2>
-                <button onClick={() => { dispatch(logout()) }}>logout</button>
-                <div className="flex flex-col items-start text-lg grow overflow-auto scrollbar-none hide-scrollbar">
-                <Link to="/" className="w-full px-8 py-3 hover:bg-highlight flex items-center justify-start gap-4">
+        <div className="navigation-container">
+            <h2 className="px-4 border-b">
+                <Link to="/">
+                    <img src={logo} alt="RetailProX" />
+                </Link>
+            </h2>
+            <div>
+                <select name="" className="flex w-full p-2 px-4 appearance-none cursor-pointer">
+                    {stores.map(store => (
+                        <option key={store.storeId} value="">
+                            {store.storeName}
+                        </option>
+                    ))}
+                </select>
+            </div>
+            <div className="flex flex-col my-2 items-start text-lg grow overflow-auto hide-scrollbar">
+                <Link to="/dashboard" className="w-full px-8 py-3 hover:bg-highlight flex items-center justify-start gap-4">
                     <FaHome /> Dashboard
                 </Link>
                 <Link to="/channels" className="w-full px-8 py-3 hover:bg-highlight flex items-center justify-start gap-4">

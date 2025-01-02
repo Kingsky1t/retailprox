@@ -17,7 +17,14 @@ const userSchema = new mongoose.Schema({
         type: String,
         required: [true, 'password is require'],
     },
-    stores: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Store' }],
+    stores: [
+        {
+            storeId: { type: mongoose.Schema.Types.ObjectId, required: true },
+            type: { type: String, required: true },
+            storeName: { type: String, required: true },
+            _id: false,
+        },
+    ],
 });
 
 export const User = mongoose.model('User', userSchema);

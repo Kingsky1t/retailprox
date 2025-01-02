@@ -37,14 +37,15 @@ export const verifyUserToken = createAsyncThunk('user/verify-user', async (_, th
             return thunkAPI.rejectWithValue('No token found');
         }
 
-        const response = await axios.post(api_url + '/user/verify-token', {}, {
-            headers: {
-                Authorization: `Bearer ${token}`
+        const response = await axios.post(
+            api_url + '/user/verify-token',
+            {},
+            {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
             }
-        });
-
-        console.log("response", response)
-
+        );
         return response.data;
     } catch (err) {
         return thunkAPI.rejectWithValue(err.response?.data || err.message);

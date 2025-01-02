@@ -5,7 +5,7 @@ export const verifyAccessTokenMiddleware = async (req, res, next) => {
     const token = req.header('Authorization')?.replace('Bearer ', '');
 
     if (!token) {
-        return res.status(401).json({ message: 'Refresh token or login again.' });
+        return res.status(400).json({ message: 'No Access Token.' });
     }
 
     try {
@@ -20,6 +20,6 @@ export const verifyAccessTokenMiddleware = async (req, res, next) => {
         next();
     } catch (err) {
         console.error(err);
-        return res.status(500).json({ message: 'Invalid or Expired token.' });
+        return res.status(401).json({ message: 'Invalid or Expired token.' });
     }
 };
