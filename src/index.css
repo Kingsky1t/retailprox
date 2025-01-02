@@ -19,8 +19,14 @@
 
 
 
-input[type="text"], input[type="email"], input[type="password"] {
+input[type="text"], input[type="email"], input[type="password"], select {
     color: var(--alternate-text-color);
+    outline: none;
+    border: none;
+}
+
+option {
+    margin-block: 1rem;
 }
 
 .app {
@@ -47,4 +53,22 @@ input[type="text"], input[type="email"], input[type="password"] {
 
 .hide-scrollbar::-webkit-scrollbar {
     display: none;
+}
+
+.modal {
+    position: fixed;
+    top:0;
+    right: 0;
+    height: 100%;
+    width: 50%;
+    background-color: var(--highlight-color);
+    padding: 1rem;
+}
+
+.modal-content {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 1rem;
 }

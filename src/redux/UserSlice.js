@@ -16,7 +16,6 @@ export const registerUser = createAsyncThunk('user/register', async (user, thunk
         const response = await axios.post(api_url + '/user/register', user);
         return response.data;
     } catch (err) {
-        console.warn(err);
         return thunkAPI.rejectWithValue(err);
     }
 });
@@ -26,7 +25,30 @@ export const loginUser = createAsyncThunk('user/login', async (user, thunkAPI) =
         const response = await axios.post(api_url + '/user/login', user);
         return response.data;
     } catch (error) {
-        return thunkAPIrejectWithValue(error.response.data);
+        return thunkAPI.rejectWithValue(error.response.data);
+    }
+});
+
+export const verifyUserToken = createAsyncThunk('user/verify-user', async (_, thunkAPI) => {
+    try {
+        const token = localStorage.getItem('retailprox_accesstoken');
+        if (!token) {
+            console.warn('No token found. Redirecting to login...');
+            return thunkAPI.rejectWithValue('No token found');
+        }
+
+        const response = await axios.post(
+            api_url + '/user/verify-token',
+            {},
+            {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            }
+        );
+        return response.data;
+    } catch (err) {
+        return thunkAPI.rejectWithValue(err.response?.data || err.message);
     }
 });
 
@@ -47,7 +69,6 @@ const userSlice = createSlice({
                 state.error = null;
             })
             .addCase(registerUser.fulfilled, (state, action) => {
-                console.log('user registered', action.payload.user);
                 state.loading = false;
                 state.user = action.payload.user;
                 // state.token = action.payload.accessToken;
@@ -70,6 +91,19 @@ const userSlice = createSlice({
             .addCase(loginUser.rejected, (state, action) => {
                 state.loading = false;
                 state.error = action.payload.message;
+            })
+            .addCase(verifyUserToken.pending, state => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(verifyUserToken.fulfilled, (state, action) => {
+                state.loading = false;
+                state.user = action.payload.user;
+            })
+            .addCase(verifyUserToken.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload;
+                state.user = null;
             });
     },
 });

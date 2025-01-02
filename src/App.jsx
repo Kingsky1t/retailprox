@@ -1,4 +1,4 @@
-import { Navigate, Route, Routes, useNavigate } from 'react-router-dom';
+import { Navigate, Outlet, Route, Routes, useNavigate } from 'react-router-dom';
 import Navigation from './components/Navigation';
 import Dashboard from './pages/Dashboard';
 import OrdersPage from './pages/OrdersPage';
@@ -7,60 +7,59 @@ import Products from './pages/Products';
 import Customers from './pages/Customer';
 import Auth from './pages/Auth';
 import PageNotFound from './pages/PageNotFound';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { useEffect } from 'react';
+import HomePage from './pages/Home';
+import { verifyUserToken } from './redux/UserSlice';
+import ChannelManage from './pages/ChannelManage';
 
 function ProtectedRoutes({ children }) {
-    const accessToken = localStorage.getItem('retailprox_accesstoken');
-    return accessToken ? children : <Navigate to="/auth" replace />;
+    const { user } = useSelector(state => state.user);
+    return user ? (
+        <>
+            <Navigation />
+            <div className="app-content">
+                <Outlet />
+            </div>
+        </>
+    ) : (
+        <Navigate to="/auth" replace />
+    );
 }
 
-function AuthRedirect({ children }) {
-    const accessToken = localStorage.getItem('retailprox_accesstoken');
-    return accessToken ? <Navigate to="/" replace /> : children;
+function AuthRedirect() {
+    const { user } = useSelector(state => state.user);
+    return user ? <Navigate to="/dashboard" replace /> : <Outlet />;
 }
 
 export default function App() {
-    const navigate = useNavigate();
+    const dispatch = useDispatch();
     const { user } = useSelector(state => state.user);
-    console.log(user);
 
     useEffect(() => {
-        if (user) {
-            navigate('/');
-        } else {
-            navigate('/auth');
+        if (!user) {
+            dispatch(verifyUserToken());
         }
     }, [user]);
+
     return (
         <main className="app">
             <Routes>
-                <Route
-                    path="/auth"
-                    element={
-                        <AuthRedirect>
-                            <Auth />
-                        </AuthRedirect>
-                    }
-                />
-                <Route
-                    path="*"
-                    element={
-                        <ProtectedRoutes>
-                            <Navigation />
-                            <div className="app-content">
-                                <Routes>
-                                    <Route path="/" element={<Dashboard />} />
-                                    <Route path="/channels" element={<ChannelsPage />} />
-                                    <Route path="/orders" element={<OrdersPage />} />
-                                    <Route path="/products" element={<Products />} />
-                                    <Route path="/customers" element={<Customers />} />
-                                    <Route path="*" element={<PageNotFound />} />
-                                </Routes>
-                            </div>
-                        </ProtectedRoutes>
-                    }
-                />
+                <Route path="/" element={<HomePage />} />
+                <Route path="/auth" element={<AuthRedirect />}>
+                    <Route index element={<Auth />} />
+                </Route>
+                <Route element={<ProtectedRoutes />}>
+                    <Route path="/dashboard" element={<Dashboard />} />
+                    <Route path="/channels">
+                        <Route index element={<ChannelsPage />} />
+                        <Route path=":channelId" element={<ChannelManage />} />
+                    </Route>
+                    <Route path="/orders" element={<OrdersPage />} />
+                    <Route path="/products" element={<Products />} />
+                    <Route path="/customers" element={<Customers />} />
+                    <Route path="*" element={<PageNotFound />} />
+                </Route>
             </Routes>
         </main>
     );

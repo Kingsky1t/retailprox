@@ -1,22 +1,17 @@
 import { useState } from 'react';
-import axios from 'axios';
+import { useDispatch } from 'react-redux';
+import { addShopifyStore } from '../redux/ShopifySlice';
 
-export default function ShopifyIntegrate({ setOpenPanel }) {
-    const [storeDetails, setStoreDetails] = useState({ userId: '676bc539312bb816131904dd', storeName: '', accessToken: '', apiKey: '', apiSecretKey: '' });
+export default function AddShopifyStore() {
+    const [storeDetails, setStoreDetails] = useState({ storeName: '', accessToken: '', apiKey: '', apiSecretKey: '' });
+    const dispatch = useDispatch();
+
     const handleSubmit = event => {
         event.preventDefault();
         event.target.reset();
-        console.log(storeDetails);
-        axios
-            .post('http://localhost:5000/user/add-store', {
-                ...storeDetails,
-            })
-            .then(response => {
-                console.log(response);
-                setOpenPanel(null);
-            })
-            .catch(error => console.error(error));
+        dispatch(addShopifyStore(storeDetails));
     };
+
     const handleFormChange = event => {
         const { name, value } = event.target;
         setStoreDetails(prev => ({
@@ -25,9 +20,9 @@ export default function ShopifyIntegrate({ setOpenPanel }) {
         }));
     };
     return (
-        <div className="w-full flex flex-col items-center p-4">
+        <div className="modal-content">
             <h1 className="mb-4 text-2xl font-bold text-center">Enter Your store credentials</h1>
-            <form autocomplete="off" onSubmit={handleSubmit} className="w-full p-6 rounded shadow-md">
+            <form onSubmit={handleSubmit} className="w-full p-6 rounded">
                 <div className="w-full p-4 flex flex-col">
                     <label className="block mb-2 font-medium" htmlFor="shopify_store_name">
                         Shopify Store Name:

@@ -1,11 +1,11 @@
 import mongoose from 'mongoose';
 
 const storeSchema = new mongoose.Schema({
-  apiKey: String,
-  apiSecretKey: String,
-  accessToken: String,
-  storeName: String,
-  user: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+    apiKey: { type: String, required: true },
+    apiSecretKey: { type: String, required: true },
+    accessToken: { type: String, required: true },
+    storeName: { type: String, required: true },
+    users: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
 });
 
-export const Store = mongoose.model("Store", storeSchema);
+export const Store = mongoose.model('Store', storeSchema);

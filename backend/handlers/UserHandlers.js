@@ -1,11 +1,10 @@
 import { User } from '../models/UserModel.js';
-import { Store } from '../models/StoreModel.js';
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
 
 export const userRegister = async (req, res) => {
     const { username, email, password } = req.body;
-    console.log(username, email, password)
+
     if (!username || !email || !password) {
         return res.status(400).json({ message: 'Missing data.' });
     }
@@ -16,8 +15,7 @@ export const userRegister = async (req, res) => {
         }
 
         const hashedPassword = await bcrypt.hash(password, 10);
-        const user = new User({ username, email, password: hashedPassword });
-        await user.save();
+        const user = await User.create({ username, email, password: hashedPassword });
 
         const accessToken = jwt.sign({ id: user._id }, process.env.JWT_ACCESS_SECRET, { expiresIn: '1d' });
 
@@ -25,8 +23,10 @@ export const userRegister = async (req, res) => {
             success: true,
             message: 'User created successfully.',
             user: {
-                username,
-                email,
+                userId: user._id,
+                username: user.username,
+                email: user.email,
+                stores: user.stores,
             },
             accessToken,
         });
@@ -58,8 +58,13 @@ export const userLogin = async (req, res) => {
 
         return res.status(200).json({
             success: true,
-            message: 'User logged in successfully.',
-            user: { username: user.username, email: user.email },
+            message: 'User Logged In successfully.',
+            user: {
+                userId: user._id,
+                username: user.username,
+                email: user.email,
+                stores: user.stores,
+            },
             accessToken,
         });
     } catch (error) {
@@ -68,24 +73,33 @@ export const userLogin = async (req, res) => {
     }
 };
 
-export const userAddStore = async (req, res) => {
-    const { userId, apiKey, apiSecretKey, accessToken, storeName } = req.body;
+export const verifyUserToken = async (req, res) => {
+    const token = req.header('Authorization')?.replace('Bearer ', '');
+
+    if (!token) {
+        return res.status(401).json({ message: 'Refresh token or login again.' });
+    }
+
     try {
-        // Check if user exists
-        const user = await User.findById(userId);
-        if (!user) return res.status(404).send('User not found.');
+        const decodedToken = jwt.verify(token, process.env.JWT_ACCESS_SECRET);
+        const user = await User.findById(decodedToken.id);
 
-        // Create a new store and associate with the user
-        const store = new Store({ apiKey, apiSecretKey, accessToken, storeName, user: user._id });
-        await store.save();
+        if (!user) {
+            return res.status(404).json({ message: 'User not found.' });
+        }
 
-        // Add store reference to the user's stores array
-        user.stores.push(store._id);
-        await user.save();
-
-        res.status(201).json({ message: 'Store added successfully.', storeId: store._id });
-    } catch (error) {
-        console.error('Error adding store:', error);
-        res.status(500).send('Error adding store.');
+        return res.status(200).json({
+            success: true,
+            message: 'Successfully verified token.',
+            user: {
+                userId: user._id,
+                username: user.username,
+                email: user.email,
+                stores: user.stores,
+            },
+        });
+    } catch (err) {
+        console.error(err);
+        return res.status(500).json({ message: 'Invalid or Expired token.' });
     }
 };
