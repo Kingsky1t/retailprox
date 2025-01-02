@@ -96,8 +96,9 @@ function Login({ isShowLogin, setShowLogin }) {
 }
 
 function Register({ isShowLogin, setShowLogin }) {
+    const dispatch= useDispatch();
     const [formData, setFormData] = useState({
-        name: '',
+        username: '',
         email: '',
         password: '',
     });
@@ -131,8 +132,8 @@ function Register({ isShowLogin, setShowLogin }) {
                 <input
                     type="text"
                     id="register-name"
-                    name="name"
-                    value={formData.name}
+                    name="username"
+                    value={formData.username}
                     onChange={handleChange}
                     className="w-full px-4 py-2 rounded focus:outline-none"
                     placeholder="Enter your name"

@@ -3,7 +3,7 @@ import { useEffect } from 'react';
 import { useState } from 'react';
 
 export default function OrdersPage() {
-    const [orders, setOrders] = useState(null);
+    const [products, setProducts] = useState(null);
     const convertDate = createdAt => {
         const newDate = Date(createdAt);
         const d = newDate.toString().split(' ');
@@ -11,10 +11,10 @@ export default function OrdersPage() {
     };
     useEffect(() => {
         axios
-            .get('http://localhost:5000/shopify/fetch-orders/676bc84d2d6a8d748016594b')
+            .get('http://localhost:5000/shopify/fetch-products/676bc84d2d6a8d748016594b')
             .then(response => {
                 console.log(response.data[0]);
-                setOrders(response.data);
+                setProducts(response.data);
             })
             .catch(error => {
                 console.error(error);
@@ -23,71 +23,65 @@ export default function OrdersPage() {
 
     return (
         <div className=" m-auto">
-            <table className="w-full text-center">
+            <table className="w-full text-center"> 
                 <thead className="text-xs text-white uppercase bg-black overflow-x-auto">
                     <tr>
                         <th scope="col" className="px-6 py-3">
-                            Order
+                            Product
                         </th>
                         <th scope="col" className="px-6 py-3">
-                            Date
+                            Status
                         </th>
                         <th scope="col" className="px-6 py-3">
-                            Customer
+                            Inventory
                         </th>
                         <th scope="col" className="px-6 py-3">
-                            Channel
+                            Sales Channel
                         </th>
                         <th scope="col" className="px-6 py-3">
-                            Total
+                            Markets
                         </th>
                         <th scope="col" className="px-6 py-3">
-                            Payment Status
+                            Catalogs
                         </th>
                         <th scope="col" className="px-6 py-3">
-                            Fulfillment Status
+                            Category
                         </th>
                         <th scope="col" className="px-6 py-3">
-                            Items
+                            Type
                         </th>
                         <th scope="col" className="px-6 py-3">
-                            Delivery Status
-                        </th>
-                        <th scope="col" className="px-6 py-3">
-                            Delivery Method
-                        </th>
-                        <th scope="col" className="px-6 py-3">
-                            Tags
+                            Vendor
                         </th>
                     </tr>
                 </thead>
                 <tbody className="text-xs">
-                    {orders &&
-                        orders.map((order, index) => (
+                    {products &&
+                        products.map((product, index) => (
                             <tr key={index} className="border-b text-white dark:bg-gray-600">
-                                <td className="px-6 py-4">#{order['order_number']}</td>
+                                <td className="px-6 py-4">{product.title}</td>
 
-                                <td className="px-6 py-4">{convertDate(order['created_at'])}</td>
+                                <td className="px-6 py-4">{product.status}</td>
 
-                                <td className="px-6 py-4">{order.customer ? `${order.customer.first_name} ${order.customer.last_name}` : 'N/A'}</td>
+                                <td className="px-6 py-4">{'NA'}</td>
 
                                 <td className="px-6 py-4">Online Store</td>
 
-                                <td className="px-6 py-4">₹{order['current_total_price']}</td>
+                                <td className="px-6 py-4">₹{'NA'}</td>
 
-                                <td className="px-6 py-4">{order['financial_status']}</td>
+                                <td className="px-6 py-4">{'NA'}</td>
 
-                                <td className="px-6 py-4">{order['fulfillment_status'] || 'Unfulfilled'}</td>
+                                <td className="px-6 py-4">{'Unfulfilled'}</td>
 
                                 <td className="px-6 py-4">
-                                    {order.line_items.length} {order.line_items.length > 1 ? 'items' : 'item'}
+                                    {product.product_type}
                                 </td>
 
-                                <td className="px-6 py-4">{/* // delivery status */}</td>
+                                <td className="px-6 py-4">{product.vendor}</td>
 
-                                <td className="px-6 py-4">{order.shipping_lines.length > 0 ? order.shipping_lines[0]['title'] : 'N/A'}</td>
+                                {/* <td className="px-6 py-4">{order.shipping_lines.length > 0 ? order.shipping_lines[0]['title'] : 'N/A'}</td> */}
 
-                                <td className="px-6 py-4">{order['tags']}</td>
+                                
                             </tr>
                         ))}
                 </tbody>

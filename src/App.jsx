@@ -3,6 +3,8 @@ import Navigation from './components/Navigation';
 import Dashboard from './pages/Dashboard';
 import OrdersPage from './pages/OrdersPage';
 import ChannelsPage from './pages/ChannelsPage';
+import Products from './pages/Products';
+import Customers from './pages/Customer';
 import Auth from './pages/Auth';
 import PageNotFound from './pages/PageNotFound';
 import { useSelector } from 'react-redux';
@@ -51,6 +53,8 @@ export default function App() {
                                     <Route path="/" element={<Dashboard />} />
                                     <Route path="/channels" element={<ChannelsPage />} />
                                     <Route path="/orders" element={<OrdersPage />} />
+                                    <Route path="/products" element={<Products />} />
+                                    <Route path="/customers" element={<Customers />} />
                                     <Route path="*" element={<PageNotFound />} />
                                 </Routes>
                             </div>

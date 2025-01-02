@@ -11,12 +11,12 @@ export const fetchShopifyStoreDetails = async (req, res) => {
             apiKey: store.apiKey,
             apiSecretKey: store.apiSecretKey,
             accessToken: store.accessToken,
-            shop: store.shop,
+            shop: store.storeName,
             apiVersion: LATEST_API_VERSION,
             hostName: process.env.HOST_NAME,
         });
 
-        const session = { accessToken: store.accessToken, shop: store.shop };
+        const session = { accessToken: store.accessToken, shop: store.storeName };
         const client = new shopify.clients.Rest({ session });
         const storeDetails = await client.get({ path: 'shop' });
 
@@ -37,12 +37,12 @@ export const fetchShopifyProducts = async (req, res) => {
             apiKey: store.apiKey,
             apiSecretKey: store.apiSecretKey,
             accessToken: store.accessToken,
-            shop: store.shop,
+            shop: store.storeName,
             apiVersion: LATEST_API_VERSION,
             hostName: process.env.HOST_NAME,
         });
 
-        const session = { accessToken: store.accessToken, shop: store.shop };
+        const session = { accessToken: store.accessToken, shop: store.storeName };
         const client = new shopify.clients.Rest({ session });
         const products = await client.get({ path: 'products' });
 
@@ -63,12 +63,12 @@ export const fetchShopifyCustomers = async (req, res) => {
             apiKey: store.apiKey,
             apiSecretKey: store.apiSecretKey,
             accessToken: store.accessToken,
-            shop: store.shop,
+            shop: store.storeName,
             apiVersion: LATEST_API_VERSION,
             hostName: process.env.HOST_NAME,
         });
 
-        const session = { accessToken: store.accessToken, shop: store.shop };
+        const session = { accessToken: store.accessToken, shop: store.storeName };
         const client = new shopify.clients.Rest({ session });
         const customers = await client.get({ path: 'customers' });
 
@@ -89,12 +89,12 @@ export const fetchShopifyOrders = async (req, res) => {
             apiKey: store.apiKey,
             apiSecretKey: store.apiSecretKey,
             accessToken: store.accessToken,
-            shop: store.shop,
+            shop: store.storeName,
             apiVersion: LATEST_API_VERSION,
             hostName: process.env.HOST_NAME,
         });
 
-        const session = { accessToken: store.accessToken, shop: store.shop };
+        const session = { accessToken: store.accessToken, shop: store.storeName };
         const client = new shopify.clients.Rest({ session });
         const ordersResponse = await client.get({ path: 'orders' });
 
