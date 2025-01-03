@@ -1,6 +1,5 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
 
 const api_url = 'http://localhost:5000';
 
@@ -9,6 +8,7 @@ const initialState = {
     // token: null,
     loading: false,
     error: null,
+    activeStore: null,
 };
 
 export const registerUser = createAsyncThunk('user/register', async (user, thunkAPI) => {
@@ -61,6 +61,9 @@ const userSlice = createSlice({
             // state.token = null;
             localStorage.clear('retailxpro_accesstoken');
         },
+        changeActiveStore: (state, action) => {
+            state.activeStore = JSON.parse(action.payload);
+        },
     },
     extraReducers: builder => {
         builder
@@ -71,6 +74,7 @@ const userSlice = createSlice({
             .addCase(registerUser.fulfilled, (state, action) => {
                 state.loading = false;
                 state.user = action.payload.user;
+                state.activeStore = action.payload.user.stores[0];
                 // state.token = action.payload.accessToken;
                 localStorage.setItem('retailprox_accesstoken', action.payload.accessToken);
             })
@@ -85,6 +89,7 @@ const userSlice = createSlice({
             .addCase(loginUser.fulfilled, (state, action) => {
                 state.loading = false;
                 state.user = action.payload.user;
+                state.activeStore = action.payload.user.stores[0];
                 // state.token = action.payload.token;
                 localStorage.setItem('retailprox_accesstoken', action.payload.accessToken);
             })
@@ -99,6 +104,7 @@ const userSlice = createSlice({
             .addCase(verifyUserToken.fulfilled, (state, action) => {
                 state.loading = false;
                 state.user = action.payload.user;
+                state.activeStore = action.payload.user.stores[0];
             })
             .addCase(verifyUserToken.rejected, (state, action) => {
                 state.loading = false;
@@ -108,5 +114,5 @@ const userSlice = createSlice({
     },
 });
 
-export const { logout } = userSlice.actions;
+export const { logout, changeActiveStore } = userSlice.actions;
 export default userSlice.reducer;

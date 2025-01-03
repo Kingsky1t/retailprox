@@ -4,7 +4,7 @@ import { useParams } from 'react-router-dom';
 import { addUserToShopifyStore, fetchShopifyStoreDetails } from '../redux/ShopifySlice';
 import { FaTimes } from 'react-icons/fa';
 
-export default function ChannelManage() {
+export default function ChannelDetailsPage() {
     const dispatch = useDispatch();
     const { channelId } = useParams();
     const [currentTab, setCurrentTab] = useState('users');

@@ -4,22 +4,19 @@ import { fetchOrders } from './../redux/StoreSlice';
 
 export default function OrdersPage() {
     const dispatch = useDispatch();
-    const { orders, loading, error } = useSelector((state) => state.orders);
-    const { user } = useSelector((state) => state.user);
+    const { orders, loading, error } = useSelector(state => state.orders);
+    const { activeStore } = useSelector(state => state.user);
+    const { user } = useSelector(state => state.user);
 
-    const convertDate = (createdAt) => {
+    const convertDate = createdAt => {
         const newDate = new Date(createdAt);
         const d = newDate.toString().split(' ');
         return d[1] + ' ' + d[2] + ' at ' + d[4];
     };
 
     useEffect(() => {
-            if (user?.stores?.length > 0) {
-                const storeId = user.stores[0].storeId; // Extract the first storeId
-                // console.log('Using Store ID:', storeId);
-                dispatch(fetchOrders(storeId));
-            }
-        }, [user, dispatch]);
+        dispatch(fetchOrders(activeStore.storeId));
+    }, [user, dispatch, activeStore]);
 
     if (loading) return <p>Loading...</p>;
     if (error) return <p>Error: {error}</p>;
@@ -47,9 +44,7 @@ export default function OrdersPage() {
                         <tr key={index} className="border-b text-white bg-background">
                             <td className="px-6 py-4">#{order['order_number']}</td>
                             <td className="px-6 py-4">{convertDate(order['created_at'])}</td>
-                            <td className="px-6 py-4">
-                                {order.customer ? `${order.customer.first_name} ${order.customer.last_name}` : 'N/A'}
-                            </td>
+                            <td className="px-6 py-4">{order.customer ? `${order.customer.first_name} ${order.customer.last_name}` : 'N/A'}</td>
                             <td className="px-6 py-4">Online Store</td>
                             <td className="px-6 py-4">₹{order['current_total_price']}</td>
                             <td className="px-6 py-4">{order['financial_status']}</td>
@@ -58,9 +53,7 @@ export default function OrdersPage() {
                                 {order.line_items.length} {order.line_items.length > 1 ? 'items' : 'item'}
                             </td>
                             <td className="px-6 py-4">{/* Delivery status logic here */}</td>
-                            <td className="px-6 py-4">
-                                {order.shipping_lines.length > 0 ? order.shipping_lines[0]['title'] : 'N/A'}
-                            </td>
+                            <td className="px-6 py-4">{order.shipping_lines.length > 0 ? order.shipping_lines[0]['title'] : 'N/A'}</td>
                             <td className="px-6 py-4">{order['tags']}</td>
                         </tr>
                     ))}

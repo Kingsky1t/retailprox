@@ -2,6 +2,7 @@ import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import axios from 'axios';
 
 const api_url = 'http://localhost:5000';
+
 const initialState = {
     store: {},
     error: null,

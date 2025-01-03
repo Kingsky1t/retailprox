@@ -17,22 +17,25 @@ import {
 } from 'react-icons/fa';
 import logo from '../assets/RetailProX logo.png';
 import { useDispatch, useSelector } from 'react-redux';
-import { logout } from '../redux/UserSlice';
+import { changeActiveStore, logout } from '../redux/UserSlice';
 import { useState } from 'react';
+import smallLogo from '../assets/retailprox-logo.svg';
 
 export default function Navigation() {
     const {
-        user: { stores },
+        user: { username, email, stores },
+        activeStore,
     } = useSelector(state => state.user);
     const dispatch = useDispatch();
+
     const location = useLocation();
+    const isActive = path => (location.pathname === path ? 'bg-highlight' : '');
+
     const [dropdownOpen, setDropdownOpen] = useState(false);
-
-    const isActive = (path) => location.pathname === path;
-
     const toggleDropdown = () => {
-        setDropdownOpen((prev) => !prev);
+        setDropdownOpen(prev => !prev);
     };
+    console.log(activeStore);
     return (
         <div className="navigation-container">
             <h2 className="px-4 border-b">
@@ -41,114 +44,88 @@ export default function Navigation() {
                 </Link>
             </h2>
             <div>
-                <select name="" className="flex w-full p-2 px-4 appearance-none cursor-pointer">
+                <select 
+                    onChange={event => dispatch(changeActiveStore(event.target.value))} 
+                    className="flex w-full p-2 px-4 appearance-none cursor-pointer">
                     {stores.map(store => (
-                        <option key={store.storeId} value="">
+                        <option key={store.storeId} value={JSON.stringify(store)}>
                             {store.storeName}
                         </option>
                     ))}
                 </select>
             </div>
             <div className="flex flex-col my-2 items-start text-lg grow overflow-auto hide-scrollbar">
-                <Link to="/dashboard" className="w-full px-8 py-3 hover:bg-highlight flex items-center justify-start gap-4">
+                <Link to="/dashboard" className={`w-full px-8 py-3 hover:bg-highlight flex items-center justify-start gap-4 ${isActive('/dashboard')}`}>
                     <FaHome /> Dashboard
                 </Link>
-                <Link
-                    to="/channels"
-                    className={`w-full px-8 py-3 hover:bg-highlight flex items-center justify-start gap-4 ${isActive('/channels') ? 'bg-highlight text-active' : ''}`}
-                >
+
+                <Link to="/channels" className={`w-full px-8 py-3 hover:bg-highlight flex items-center justify-start gap-4 ${isActive('/channels')}`}>
                     <FaBroadcastTower /> Channels
                 </Link>
-                <Link
-                    to="/"
-                    className={`w-full px-8 py-3 hover:bg-highlight flex items-center justify-start gap-4 ${isActive('/') ? 'bg-highlight text-active' : ''}`}
-                >
+
+                <Link to="/pos" className={`w-full px-8 py-3 hover:bg-highlight flex items-center justify-start gap-4 ${isActive('/pos')}`}>
                     <FaCubes /> POS
                 </Link>
-                <Link
-                    to="/inventory"
-                    className={`w-full px-8 py-3 hover:bg-highlight flex items-center justify-start gap-4 ${isActive('/inventory') ? 'bg-highlight text-active' : ''}`}
-                >
+
+                <Link to="/inventory" className={`w-full px-8 py-3 hover:bg-highlight flex items-center justify-start gap-4 ${isActive('/inventory')}`}>
                     <FaClipboardList /> Inventory
                 </Link>
-                <Link
-                    to="/orders"
-                    className={`w-full px-8 py-3 hover:bg-highlight flex items-center justify-start gap-4 ${isActive('/orders') ? 'bg-highlight text-active' : ''}`}
-                >
+
+                <Link to="/orders" className={`w-full px-8 py-3 hover:bg-highlight flex items-center justify-start gap-4 ${isActive('/orders')}`}>
                     <FaShoppingCart /> Orders
                 </Link>
-                <Link
-                    to="/customers"
-                    className={`w-full px-8 py-3 hover:bg-highlight flex items-center justify-start gap-4 ${isActive('/customers') ? 'bg-highlight text-active' : ''}`}
-                >
+
+                <Link to="/customers" className={`w-full px-8 py-3 hover:bg-highlight flex items-center justify-start gap-4 ${isActive('/customers')}`}>
                     <FaUserAlt /> Customers
                 </Link>
-                <Link
-                    to="/"
-                    className={`w-full px-8 py-3 hover:bg-highlight flex items-center justify-start gap-4 ${isActive('/') ? 'bg-highlight text-active' : ''}`}
-                >
+
+                <Link to="/logistics" className={`w-full px-8 py-3 hover:bg-highlight flex items-center justify-start gap-4 ${isActive('/logistics')}`}>
                     <FaShippingFast /> Logistics
                 </Link>
-                <Link
-                    to="/"
-                    className={`w-full px-8 py-3 hover:bg-highlight flex items-center justify-start gap-4 ${isActive('/') ? 'bg-highlight text-active' : ''}`}
-                >
+
+                <Link to="/marketing" className={`w-full px-8 py-3 hover:bg-highlight flex items-center justify-start gap-4 ${isActive('/marketing')}`}>
                     <FaChartLine /> Marketing
                 </Link>
+
                 <Link
-                    to="/"
-                    className={`w-full px-8 py-3 hover:bg-highlight flex items-center justify-start gap-4 ${isActive('/') ? 'bg-highlight text-active' : ''}`}
+                    to="/global-and-compliance"
+                    className={`w-full px-8 py-3 hover:bg-highlight flex items-center justify-start gap-4 ${isActive('/global-and-compliance')}`}
                 >
                     <FaGlobe /> Global and Compliance
                 </Link>
-                <Link
-                    to="/"
-                    className={`w-full px-8 py-3 hover:bg-highlight flex items-center justify-start gap-4 ${isActive('/') ? 'bg-highlight text-active' : ''}`}
-                >
+
+                <Link to="/security" className={`w-full px-8 py-3 hover:bg-highlight flex items-center justify-start gap-4 ${isActive('/security')}`}>
                     <FaShieldAlt /> Security
                 </Link>
+
                 <Link
-                    to="/"
-                    className={`w-full px-8 py-3 hover:bg-highlight flex items-center justify-start gap-4 ${isActive('/') ? 'bg-highlight text-active' : ''}`}
+                    to="/developer-tools"
+                    className={`w-full px-8 py-3 hover:bg-highlight flex items-center justify-start gap-4 ${isActive('/developer-tools')}`}
                 >
                     <FaTools /> Developer Tools
                 </Link>
-                <Link
-                    to="/"
-                    className={`w-full px-8 py-3 hover:bg-highlight flex items-center justify-start gap-4 ${isActive('/') ? 'bg-highlight text-active' : ''}`}
-                >
+
+                <Link to="/support" className={`w-full px-8 py-3 hover:bg-highlight flex items-center justify-start gap-4 ${isActive('/support')}`}>
                     <FaHeadset /> Support
                 </Link>
             </div>
-            <div className="border-t-[0.27px] border-white w-full mt-20 md:mt-auto p-1 relative">
-                <div
-                    className="flex gap-2 items-center px-5 pt-2 cursor-pointer"
-                    onClick={toggleDropdown}
-                >
-                    <div
-                        className="flex justify-center items-center text-xs whitespace-nowrap rounded-full border border-white"
-                        style={{ width: '50px', height: '50px' }}
-                    >
-                        B+NG
+            <div className="border-t-[1px] border-white w-full relative p-2">
+                <div className="flex gap-2 items-center p-2 cursor-pointer" onClick={toggleDropdown}>
+                    <div className="flex justify-center items-center border-white border-2 p-1 rounded-full  overflow-hidden">
+                        <img src={smallLogo} alt="logo" className="w-[40px] h-[40px]" />
                     </div>
-                    <div className="flex flex-col w-[60%] px-2">
-                        <div className="text-xs font-medium">Brad NextGen</div>
-                        <div className="mt-1 text-xs">Brad@gmail.com</div>
+                    <div className="flex gap-1 flex-col w-3/5">
+                        <div className="text-xs font-medium">{username}</div>
+                        <div className="text-xs">{email}</div>
                     </div>
                     <div>{dropdownOpen ? <FaCaretUp /> : <FaCaretDown />}</div>
                 </div>
                 {dropdownOpen && (
-                    <div className="absolute bottom-[100%] mb-2 bg-background shadow-lg border rounded-md w-[97%] z-10">
-                        <button
-                            onClick={() => alert('Profile clicked')}
-                            className="w-full text-left px-4 py-2 hover:bg-highlight"
-                        >
-                            Profile
-                        </button>
-                        <button
-                            onClick={() => dispatch(logout())}
-                            className="w-full text-left px-4 py-2 hover:bg-highlight"
-                        >
+                    <div className="absolute w-full bottom-[100%] border-y p-2 bg-background z-10">
+                        <Link to="/profile">
+                            <button className="w-full text-left px-4 py-2 hover:bg-highlight rounded">Profile</button>
+                        </Link>
+                        <button onClick={() => dispatch(logout())} className="w-full text-left px-4 py-2 hover:bg-highlight rounded">
                             Logout
                         </button>
                     </div>
