@@ -43,6 +43,7 @@ function AuthRedirect({ user, loading }) {
 export default function App() {
     const dispatch = useDispatch();
     const { user, loading } = useSelector(state => state.user);
+    console.log("User",user);
 
     useEffect(() => {
         if (!user) {

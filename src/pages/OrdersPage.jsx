@@ -26,39 +26,17 @@ export default function OrdersPage() {
             <table className="w-full text-center">
                 <thead className="text-xs text-white uppercase bg-highlight overflow-x-auto">
                     <tr>
-                        <th scope="col" className="px-6 py-3">
-                            Order
-                        </th>
-                        <th scope="col" className="px-6 py-3">
-                            Date
-                        </th>
-                        <th scope="col" className="px-6 py-3">
-                            Customer
-                        </th>
-                        <th scope="col" className="px-6 py-3">
-                            Channel
-                        </th>
-                        <th scope="col" className="px-6 py-3">
-                            Total
-                        </th>
-                        <th scope="col" className="px-6 py-3">
-                            Payment Status
-                        </th>
-                        <th scope="col" className="px-6 py-3">
-                            Fulfillment Status
-                        </th>
-                        <th scope="col" className="px-6 py-3">
-                            Items
-                        </th>
-                        <th scope="col" className="px-6 py-3">
-                            Delivery Status
-                        </th>
-                        <th scope="col" className="px-6 py-3">
-                            Delivery Method
-                        </th>
-                        <th scope="col" className="px-6 py-3">
-                            Tags
-                        </th>
+                        <th scope="col" className="px-6 py-3">Order</th>
+                        <th scope="col" className="px-6 py-3">Date</th>
+                        <th scope="col" className="px-6 py-3">Customer</th>
+                        <th scope="col" className="px-6 py-3">Channel</th>
+                        <th scope="col" className="px-6 py-3">Total</th>
+                        <th scope="col" className="px-6 py-3">Payment Status</th>
+                        <th scope="col" className="px-6 py-3">Fulfillment Status</th>
+                        <th scope="col" className="px-6 py-3">Items</th>
+                        <th scope="col" className="px-6 py-3">Delivery Status</th>
+                        <th scope="col" className="px-6 py-3">Delivery Method</th>
+                        <th scope="col" className="px-6 py-3">Tags</th>
                     </tr>
                 </thead>
                 <tbody className="text-xs">
