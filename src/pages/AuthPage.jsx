@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { loginUser, registerUser } from '../redux/UserSlice';
+import logo from '../assets/RetailProX logo.png';
+import { Link } from 'react-router-dom';
 
 export default function AuthPage() {
     const [isShowLogin, setShowLogin] = useState(true);
@@ -8,7 +10,9 @@ export default function AuthPage() {
     return (
         <>
             <div className="w-full h-full flex flex-col items-center justify-center overflow-hidden">
-                <h1 className="text-4xl font-bold mb-8">Welcome to RetailProX</h1>
+            <div className="flex justify-center w-full pb-10">
+                <img src={logo} alt="RetailProX" className='w-[20rem]' />
+            </div>
                 <div className="w-full flex items-start justify-center">
                     <Login isShowLogin={isShowLogin} setShowLogin={setShowLogin} />
                     <Register isShowLogin={isShowLogin} setShowLogin={setShowLogin} />
@@ -40,14 +44,21 @@ function Login({ isShowLogin, setShowLogin }) {
     };
 
     return (
-        <form
-            onSubmit={handleFormSubmit}
-            className={`
-                w-full max-w-md p-8 bg-highlight rounded flex flex-col gap-4 text-text transition duration-500
+        <div className={`
+                w-full max-w-lg p-8 rounded flex flex-col gap-4 text-text transition duration-500
                 ${isShowLogin ? 'opacity-100 translate-x-1/2' : 'opacity-0 -translate-x-full'}
-              `}
-        >
-            <h2 className="text-2xl font-bold text-center">Login</h2>
+              `}>
+            <h2 className="text-3xl font-bold text-center">Sign in to your account</h2>
+            <button className="w-full py-2 text-white bg-ascent rounded text-lg mt-4">
+                Sign in with Google
+            </button>
+            <div className="flex items-center my-2">
+                <div className="flex-grow h-px bg-gray-300"></div>
+                <span className="px-4 text-gray-500 text-sm">OR</span>
+                <div className="flex-grow h-px bg-gray-300"></div>
+            </div>
+            <form
+            onSubmit={handleFormSubmit} className='w-full max-w-lg rounded flex flex-col gap-4' >
             <div>
                 <label htmlFor="login-email" className="block mb-2 text-md">
                     Email
@@ -58,7 +69,7 @@ function Login({ isShowLogin, setShowLogin }) {
                     name="email"
                     value={formData.email}
                     onChange={handleChange}
-                    className="w-full px-4 py-2 rounded focus:outline-none"
+                    className="w-full px-4 py-2 rounded focus:outline-none bg-highlight focus:text-white"
                     placeholder="Enter your email"
                     required
                 />
@@ -73,24 +84,25 @@ function Login({ isShowLogin, setShowLogin }) {
                     name="password"
                     value={formData.password}
                     onChange={handleChange}
-                    className="w-full px-4 py-2 rounded focus:outline-none"
+                    className="w-full px-4 py-2 rounded focus:outline-none bg-highlight focus:text-white"
                     placeholder="Enter your password"
                     required
                 />
             </div>
-            <button type="submit" className="w-full py-2 text-white bg-ascent rounded text-lg font-bold mt-4">
-                Login
+            <button type="submit" className="w-full py-2 text-white bg-ascent rounded text-lg mt-4">
+                Sign in
             </button>
             <button
                 onClick={() => {
                     setShowLogin(false);
                 }}
                 type="button"
-                className="w-full py-2 text-ascent hover:text-text bg-transparent border-none"
+                className="w-full py-4 text-ascent hover:text-text bg-transparent border-none"
             >
-                Don't have an Account? Register here.
+                Don't have an Account? Sign up.
             </button>
         </form>
+        </div>
     );
 }
 
@@ -116,14 +128,22 @@ function Register({ isShowLogin, setShowLogin }) {
     };
 
     return (
+        <div className={`
+            w-full max-w-lg p-8 rounded flex flex-col gap-4 text-text transition duration-500
+            ${isShowLogin ? 'opacity-0 translate-x-full' : 'opacity-100 -translate-x-1/2'}
+          `}>
+        <button className="w-full py-2 text-white bg-ascent rounded text-lg mt-4">
+            Sign up with Google
+        </button>
+        <div className="flex items-center my-2">
+            <div className="flex-grow h-px bg-gray-300"></div>
+            <span className="px-4 text-gray-500 text-sm">OR</span>
+            <div className="flex-grow h-px bg-gray-300"></div>
+        </div>
         <form
             onSubmit={handleFormSubmit}
-            className={`
-            w-full max-w-md p-8 bg-highlight rounded flex flex-col gap-4 text-text transition duration-500
-            ${isShowLogin ? 'opacity-0 translate-x-full' : 'opacity-100 -translate-x-1/2'}
-          `}
+            className='w-full max-w-lg rounded flex flex-col gap-4'
         >
-            <h2 className="mb-4 text-2xl font-bold text-center">Register</h2>
             <div>
                 <label htmlFor="register-name" className="block mb-2 text-md">
                     Name
@@ -134,7 +154,7 @@ function Register({ isShowLogin, setShowLogin }) {
                     name="username"
                     value={formData.username}
                     onChange={handleChange}
-                    className="w-full px-4 py-2 rounded focus:outline-none"
+                    className="w-full px-4 py-2 rounded focus:outline-none bg-highlight focus:text-white"
                     placeholder="Enter your name"
                     required
                 />
@@ -149,7 +169,7 @@ function Register({ isShowLogin, setShowLogin }) {
                     name="email"
                     value={formData.email}
                     onChange={handleChange}
-                    className="w-full px-4 py-2 rounded focus:outline-none"
+                    className="w-full px-4 py-2 rounded focus:outline-none bg-highlight focus:text-white"
                     placeholder="Enter your email"
                     required
                 />
@@ -164,7 +184,7 @@ function Register({ isShowLogin, setShowLogin }) {
                     name="password"
                     value={formData.password}
                     onChange={handleChange}
-                    className="w-full px-4 py-2 rounded focus:outline-none"
+                    className="w-full px-4 py-2 rounded focus:outline-none bg-highlight focus:text-white"
                     placeholder="Enter your password"
                     required
                 />
@@ -182,5 +202,6 @@ function Register({ isShowLogin, setShowLogin }) {
                 Already have an Account? Login here.
             </button>
         </form>
+        </div>
     );
 }
