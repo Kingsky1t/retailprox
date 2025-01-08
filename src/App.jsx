@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect,useRef } from 'react';
 import { Navigate, Outlet, Route, Routes } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { verifyUserToken } from './redux/UserSlice';
@@ -20,6 +20,7 @@ import GlobalAndCompliancePage from './pages/GlobalAndCompliancePage';
 import SecurityPage from './pages/SecurityPage';
 import DeveloperToolsPage from './pages/DeveloperToolsPage';
 import SupportPage from './pages/SupportPage';
+import AuthSuccessPage from './pages/AuthSuccessPage';
 
 function ProtectedRoutes({ user, loading }) {
     if (loading) return 'Loading...';
@@ -43,13 +44,23 @@ function AuthRedirect({ user, loading }) {
 export default function App() {
     const dispatch = useDispatch();
     const { user, loading } = useSelector(state => state.user);
-    console.log("User",user);
+    // console.log("User",user);
+    const hasRun = useRef(false);
 
-    useEffect(() => {
-        if (!user) {
+     useEffect(() => {
+        console.log('User effect:', user);
+
+        // Check if the effect has already run, if yes, exit
+        if (hasRun.current) return;
+
+        if (!user && !loading) {
             dispatch(verifyUserToken());
+            console.log('Dispatching verifyUserToken');
         }
-    }, [user]);
+
+        // Set the ref to true to prevent further runs of the effect
+        hasRun.current = true;
+    }, [user, loading, dispatch]);
 
     return (
         <main className="app">
@@ -58,6 +69,7 @@ export default function App() {
                 <Route path="/auth" element={<AuthRedirect user={user} loading={loading} />}>
                     <Route index element={<AuthPage />} />
                 </Route>
+                <Route path="/auth/success" element={<AuthSuccessPage />} /> 
                 <Route element={<ProtectedRoutes user={user} loading={loading} />}>
                     <Route path="/dashboard" element={<DashboardPage />} />
                     <Route path="/channels">
