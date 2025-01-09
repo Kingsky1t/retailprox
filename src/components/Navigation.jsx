@@ -24,7 +24,6 @@ import smallLogo from '../assets/retailprox-logo.svg';
 export default function Navigation() {
     const {
         user: { username, email, stores },
-        activeStore,
     } = useSelector(state => state.user);
     const dispatch = useDispatch();
 
@@ -35,7 +34,7 @@ export default function Navigation() {
     const toggleDropdown = () => {
         setDropdownOpen(prev => !prev);
     };
-    console.log(activeStore);
+
     return (
         <div className="navigation-container">
             <h2 className="px-4 border-b">
@@ -44,28 +43,23 @@ export default function Navigation() {
                 </Link>
             </h2>
             <div>
-                <select 
-                    onChange={event => dispatch(changeActiveStore(event.target.value))} 
-                    className="flex w-full p-2 px-4 appearance-none cursor-pointer">
-                    {stores.length <= 0 && <option value="" disabled>No stores available</option>}
-                    {stores.map(store => (
-                        <option key={store.storeId} value={JSON.stringify(store)}>
-                            {store.storeName}
+                <select onChange={event => dispatch(changeActiveStore(event.target.value))} className="flex w-full p-2 px-4 appearance-none cursor-pointer">
+                    {stores && stores.length > 0 ? (
+                        stores.map(store => (
+                            <option key={store.storeId} value={JSON.stringify(store)}>
+                                {store.storeName}
+                            </option>
+                        ))
+                    ) : (
+                        <option value="" disabled>
+                            No stores available
                         </option>
-                    ))}
+                    )}
                 </select>
             </div>
             <div className="flex flex-col my-2 items-start text-lg grow overflow-auto hide-scrollbar">
                 <Link to="/dashboard" className={`w-full px-8 py-3 hover:bg-highlight flex items-center justify-start gap-4 ${isActive('/dashboard')}`}>
                     <FaHome /> Dashboard
-                </Link>
-
-                <Link to="/channels" className={`w-full px-8 py-3 hover:bg-highlight flex items-center justify-start gap-4 ${isActive('/channels')}`}>
-                    <FaBroadcastTower /> Channels
-                </Link>
-
-                <Link to="/pos" className={`w-full px-8 py-3 hover:bg-highlight flex items-center justify-start gap-4 ${isActive('/pos')}`}>
-                    <FaCubes /> POS
                 </Link>
 
                 <Link to="/inventory" className={`w-full px-8 py-3 hover:bg-highlight flex items-center justify-start gap-4 ${isActive('/inventory')}`}>
@@ -78,6 +72,14 @@ export default function Navigation() {
 
                 <Link to="/customers" className={`w-full px-8 py-3 hover:bg-highlight flex items-center justify-start gap-4 ${isActive('/customers')}`}>
                     <FaUserAlt /> Customers
+                </Link>
+
+                <Link to="/channels" className={`w-full px-8 py-3 hover:bg-highlight flex items-center justify-start gap-4 ${isActive('/channels')}`}>
+                    <FaBroadcastTower /> Channels
+                </Link>
+
+                <Link to="/pos" className={`w-full px-8 py-3 hover:bg-highlight flex items-center justify-start gap-4 ${isActive('/pos')}`}>
+                    <FaCubes /> POS
                 </Link>
 
                 <Link to="/logistics" className={`w-full px-8 py-3 hover:bg-highlight flex items-center justify-start gap-4 ${isActive('/logistics')}`}>

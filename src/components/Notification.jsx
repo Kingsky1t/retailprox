@@ -22,7 +22,7 @@ export default function Notification() {
     return (
         <div className="fixed top-4 left-1/2 -translate-x-1/2 w-80 bg-white text-black text-center  animate-notification-slide-down flex flex-col rounded">
             <div className="w-full h-1 bg-ascent animate-border-timer rounded"></div>
-            <div className="flex justify-between items-center p-4">
+            <div className="flex justify-between items-center gap-4 p-4">
                 <p className="">{message}</p>
                 <button onClick={() => dispatch(hideNotification())} className="">
                     ✖

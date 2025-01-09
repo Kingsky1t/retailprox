@@ -21,12 +21,12 @@ const initialInventoryState = {
     error: null,
 };
 
-// Async thunk to fetch orders
 export const fetchOrders = createAsyncThunk('orders/fetchOrders', async (shopId, thunkAPI) => {
     try {
+        const token = localStorage.getItem('retailprox_accesstoken');
         const response = await axios.get(`${api_url}/shopify/fetch-orders/${shopId}`, {
             headers: {
-                Authorization: `Bearer ${localStorage.getItem('retailprox_accesstoken')}`,
+                Authorization: `Bearer ${token}`,
             },
         });
         return response.data;
@@ -35,12 +35,12 @@ export const fetchOrders = createAsyncThunk('orders/fetchOrders', async (shopId,
     }
 });
 
-// Async thunk to fetch customers
 export const fetchCustomers = createAsyncThunk('customers/fetchCustomers', async (shopId, thunkAPI) => {
     try {
+        const token = localStorage.getItem('retailprox_accesstoken');
         const response = await axios.get(`${api_url}/shopify/fetch-customers/${shopId}`, {
             headers: {
-                Authorization: `Bearer ${localStorage.getItem('retailprox_accesstoken')}`,
+                Authorization: `Bearer ${token}`,
             },
         });
         return response.data;
@@ -49,7 +49,6 @@ export const fetchCustomers = createAsyncThunk('customers/fetchCustomers', async
     }
 });
 
-// Async thunk to fetch inventory
 export const fetchInventory = createAsyncThunk('inventory/fetchInventory', async (shopId, thunkAPI) => {
     try {
         const response = await axios.get(`${api_url}/shopify/fetch-products/${shopId}`, {
@@ -63,68 +62,68 @@ export const fetchInventory = createAsyncThunk('inventory/fetchInventory', async
     }
 });
 
-// Orders slice
 const ordersSlice = createSlice({
     name: 'orders',
     initialState: initialOrdersState,
     reducers: {},
-    extraReducers: (builder) => {
+    extraReducers: builder => {
         builder
-            .addCase(fetchOrders.pending, (state) => {
+            .addCase(fetchOrders.pending, state => {
                 state.loading = true;
                 state.error = null;
             })
             .addCase(fetchOrders.fulfilled, (state, action) => {
                 state.loading = false;
-                state.orders = action.payload;
+                state.orders = action.payload.orders;
+                state.error = null;
             })
             .addCase(fetchOrders.rejected, (state, action) => {
                 state.loading = false;
-                state.error = action.payload;
+                state.error = action.payload.message;
             });
     },
 });
 
-// Customers slice
 const customersSlice = createSlice({
     name: 'customers',
     initialState: initialCustomersState,
     reducers: {},
-    extraReducers: (builder) => {
+    extraReducers: builder => {
         builder
-            .addCase(fetchCustomers.pending, (state) => {
+            .addCase(fetchCustomers.pending, state => {
                 state.loading = true;
                 state.error = null;
             })
             .addCase(fetchCustomers.fulfilled, (state, action) => {
                 state.loading = false;
-                state.customers = action.payload;
+                state.customers = action.payload.customers;
+                state.error = null;
             })
             .addCase(fetchCustomers.rejected, (state, action) => {
                 state.loading = false;
-                state.error = action.payload;
+                state.error = action.payload.message;
             });
     },
 });
 
-// Inventory slice
 const inventorySlice = createSlice({
     name: 'inventory',
     initialState: initialInventoryState,
     reducers: {},
-    extraReducers: (builder) => {
+    extraReducers: builder => {
         builder
-            .addCase(fetchInventory.pending, (state) => {
+            .addCase(fetchInventory.pending, state => {
                 state.loading = true;
                 state.error = null;
             })
             .addCase(fetchInventory.fulfilled, (state, action) => {
                 state.loading = false;
-                state.inventory = action.payload;
+                state.inventory = action.payload.products;
+                state.error = null;
             })
             .addCase(fetchInventory.rejected, (state, action) => {
                 state.loading = false;
-                state.error = action.payload;
+                state.error = action.payload.message;
             });
     },
 });

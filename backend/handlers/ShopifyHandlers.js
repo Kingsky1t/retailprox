@@ -46,13 +46,15 @@ export const fetchShopifyStoreDetails = async (req, res) => {
 };
 
 export const fetchShopifyProducts = async (req, res) => {
-    const { requestingUserId, storeId } = req.params;
+    const { storeId } = req.params;
+    const { requestingUserId } = req.body;
+
     try {
         const store = await Store.findById(storeId);
-        if (!store) return res.status(404).send('Store not found.');
+        if (!store) return res.status(404).json({ success: false, message: 'Store not found.' });
 
         if (!store.users.includes(requestingUserId)) {
-            return res.status(401).json({ message: 'User do not have access to the store.' });
+            return res.status(401).json({ success: false, message: 'User do not have access to the store.' });
         }
 
         const shopify = shopifyApi({
@@ -68,21 +70,23 @@ export const fetchShopifyProducts = async (req, res) => {
         const client = new shopify.clients.Rest({ session });
         const products = await client.get({ path: 'products' });
 
-        res.json(products.body.products);
+        res.status(200).json({ success: true, message: 'products fetched successfully.', products: products.body.products });
     } catch (error) {
         console.error('Error fetching products:', error);
-        res.status(500).json({ error: 'Error fetching products. Check the terminal for details.' });
+        res.status(500).json({ success: false, message: 'Error fetching products: ' + error.message });
     }
 };
 
 export const fetchShopifyCustomers = async (req, res) => {
-    const { requestingUserId, storeId } = req.params;
+    const { storeId } = req.params;
+    const { requestingUserId } = req.body;
+
     try {
         const store = await Store.findById(storeId);
-        if (!store) return res.status(404).send('Store not found.');
+        if (!store) return res.status(404).json({ success: false, message: 'Store not found.' });
 
         if (!store.users.includes(requestingUserId)) {
-            return res.status(401).json({ message: 'User do not have access to the store.' });
+            return res.status(401).json({ success: false, message: 'User do not have access to the store.' });
         }
 
         const shopify = shopifyApi({
@@ -98,19 +102,20 @@ export const fetchShopifyCustomers = async (req, res) => {
         const client = new shopify.clients.Rest({ session });
         const customers = await client.get({ path: 'customers' });
 
-        res.json(customers.body.customers);
+        res.status(200).json({ success: true, message: 'customers fetched successfully.', customers: customers.body.customers });
     } catch (error) {
         console.error('Error fetching customers:', error);
-        res.status(500).json({ error: 'Error fetching customers. Check the terminal for details.' });
+        res.status(500).json({ success: false, message: 'Error fetching customers: ' + error.message });
     }
 };
 
 export const fetchShopifyOrders = async (req, res) => {
-    const { requestingUserId, storeId } = req.params;
+    const { storeId } = req.params;
+    const { requestingUserId } = req.body;
 
     try {
         const store = await Store.findById(storeId);
-        if (!store) return res.status(404).send('Store not found.');
+        if (!store) return res.status(404).send({ success: false, message: 'Store not found.' });
 
         if (!store.users.includes(requestingUserId)) {
             return res.status(401).json({ success: false, message: 'You do not have access to the store.' });
@@ -129,10 +134,10 @@ export const fetchShopifyOrders = async (req, res) => {
         const client = new shopify.clients.Rest({ session });
         const ordersResponse = await client.get({ path: 'orders' });
 
-        res.json(ordersResponse.body.orders);
+        res.status(200).json({ success: true, message: 'Orders fetched successfully.', orders: ordersResponse.body.orders });
     } catch (error) {
         console.error('Error fetching orders:', error);
-        res.status(500).json({ error: 'Error fetching orders. Check the terminal for details.' });
+        res.status(500).json({ success: false, message: 'Error fetching orders: ' + error.message });
     }
 };
 

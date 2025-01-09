@@ -1,6 +1,8 @@
 import React, { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { fetchCustomers } from '../redux/StoreSlice'; // Update with the correct path to StoreSlice
+import { setNotification } from '../redux/NotificationSlice';
+import Spinner from '../components/Spinner';
 
 export default function CustomersPage() {
     const dispatch = useDispatch();
@@ -8,17 +10,24 @@ export default function CustomersPage() {
     const { user, activeStore } = useSelector(state => state.user);
 
     useEffect(() => {
-        dispatch(fetchCustomers(activeStore.storeId));
+        if (activeStore) {
+            dispatch(fetchCustomers(activeStore.storeId));
+        } else {
+            dispatch(setNotification('No store connected. Cannot show Customers.'));
+        }
+
+        if (error) {
+            dispatch(setNotification(error));
+        }
     }, [user, dispatch, activeStore]);
 
-    if (loading) return <div>Loading...</div>;
-    if (error) return <div>Error: {error}</div>;
+    if (loading) return <Spinner />;
 
     return (
-        <div className="m-auto">
+        <div className="w-full h-full overflow-auto">
             {customers && customers.length > 0 ? (
-                <table className="w-full text-center">
-                    <thead className="text-xs text-white uppercase bg-highlight">
+                <table className="w-full h-full text-center relative">
+                    <thead className="text-xs sticky top-0 text-white uppercase bg-highlight">
                         <tr>
                             <th scope="col" className="px-6 py-3">
                                 Customer name
@@ -56,7 +65,9 @@ export default function CustomersPage() {
                     </tbody>
                 </table>
             ) : (
-                !loading && <p>No customers found.</p>
+                <div>
+                    <span>No customers found.</span>
+                </div>
             )}
         </div>
     );

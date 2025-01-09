@@ -1,6 +1,6 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import axios from 'axios';
-import { jwtDecode } from "jwt-decode";
+import { jwtDecode } from 'jwt-decode';
 
 const api_url = 'http://localhost:5000';
 
@@ -53,20 +53,16 @@ export const verifyUserToken = createAsyncThunk('user/verify-user', async (_, th
     }
 });
 
-export const verifyGoogleToken = createAsyncThunk(
-    'user/verifyGoogleToken',
-    async (token, { rejectWithValue }) => {
-        try {
+export const verifyGoogleToken = createAsyncThunk('user/verify-google-token', async (token, thunkAPI) => {
+    try {
+        const decodedToken = jwtDecode(token);
 
-            const decodedToken = jwtDecode(token);
-
-            // console.log("from UserSlice",decodedToken);
-            return decodedToken;
-        } catch (error) {
-            return rejectWithValue(error.message);
-        }
+        // console.log("from UserSlice",decodedToken);
+        return decodedToken;
+    } catch (error) {
+        return thunkAPI.rejectWithValue(error.message);
     }
-);
+});
 
 const userSlice = createSlice({
     name: 'user',
@@ -127,8 +123,8 @@ const userSlice = createSlice({
                 state.error = action.payload;
                 state.user = null;
             })
-             // Verify Google Token
-             .addCase(verifyGoogleToken.pending, state => {
+            // Verify Google Token
+            .addCase(verifyGoogleToken.pending, state => {
                 state.loading = true;
                 state.error = null;
             })
