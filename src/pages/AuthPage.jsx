@@ -47,7 +47,11 @@ function Login({ isShowLogin, setShowLogin }) {
                 ${isShowLogin ? 'opacity-100 translate-x-1/2' : 'opacity-0 -translate-x-full'}
               `}>
             <h2 className="text-3xl font-bold text-center">Sign in to your account</h2>
-            <button className="w-full py-2 text-white bg-ascent rounded text-lg mt-4">
+            <button
+             onClick={() => {
+                window.location.href = 'http://localhost:5000/auth/google';
+            }}           
+             className="w-full py-2 text-white bg-ascent rounded text-lg mt-4">
                 Sign in with Google
             </button>
             <div className="flex items-center my-2">
@@ -130,7 +134,11 @@ function Register({ isShowLogin, setShowLogin }) {
             w-full max-w-lg p-8 rounded flex flex-col gap-4 text-text transition duration-500
             ${isShowLogin ? 'opacity-0 translate-x-full' : 'opacity-100 -translate-x-1/2'}
           `}>
-        <button className="w-full py-2 text-white bg-ascent rounded text-lg mt-4">
+        <button className="w-full py-2 text-white bg-ascent rounded text-lg mt-4"
+         onClick={() => {
+            window.location.href = 'http://localhost:5173/auth/google';
+        }}
+        >
             Sign up with Google
         </button>
         <div className="flex items-center my-2">

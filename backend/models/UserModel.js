@@ -13,8 +13,9 @@ const userSchema = new mongoose.Schema(
         },
         password: {
             type: String,
-            required: [true, 'password is require'],
+            required: [false, 'password is require'],
         },
+        googleId: { type: String, unique: true },
         stores: [
             {
                 storeId: { type: mongoose.Schema.Types.ObjectId, required: true },

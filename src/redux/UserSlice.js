@@ -1,5 +1,6 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import axios from 'axios';
+import { jwtDecode } from "jwt-decode";
 
 const api_url = 'http://localhost:5000';
 
@@ -51,6 +52,21 @@ export const verifyUserToken = createAsyncThunk('user/verify-user', async (_, th
         return thunkAPI.rejectWithValue(err.response?.data || err.message);
     }
 });
+
+export const verifyGoogleToken = createAsyncThunk(
+    'user/verifyGoogleToken',
+    async (token, { rejectWithValue }) => {
+        try {
+
+            const decodedToken = jwtDecode(token);
+
+            // console.log("from UserSlice",decodedToken);
+            return decodedToken;
+        } catch (error) {
+            return rejectWithValue(error.message);
+        }
+    }
+);
 
 const userSlice = createSlice({
     name: 'user',
@@ -110,6 +126,20 @@ const userSlice = createSlice({
                 state.loading = false;
                 state.error = action.payload;
                 state.user = null;
+            })
+             // Verify Google Token
+             .addCase(verifyGoogleToken.pending, state => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(verifyGoogleToken.fulfilled, (state, action) => {
+                state.loading = false;
+                state.user = action.payload;
+                // localStorage.setItem('retailprox_accesstoken', action.payload.accessToken);
+            })
+            .addCase(verifyGoogleToken.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload;
             });
     },
 });
