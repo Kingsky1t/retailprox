@@ -1,18 +1,19 @@
 import { shopifyApi, LATEST_API_VERSION } from '@shopify/shopify-api';
 import { Store } from '../models/StoreModel.js';
 import { User } from '../models/UserModel.js';
-import bcrypt from 'bcryptjs';
+import mongoose from 'mongoose';
 
 export const fetchShopifyStoreDetails = async (req, res) => {
     const { storeId } = req.params;
-    const userId = req.userId;
+    const { requestingUserId } = req.body;
     try {
         const store = await Store.findById(storeId).populate('users');
         if (!store) return res.status(404).json({ message: 'Store not found.' });
 
-        const user = store.users.find(user => user._id.equals(userId));
+        const user = store.users.find(user => user._id.equals(requestingUserId));
+        console.log(requestingUserId);
         if (!user) {
-            return res.status(404).json({ message: 'User not found.' });
+            return res.status(401).json({ message: 'User do not have access to the store.' });
         }
 
         const shopify = shopifyApi({
@@ -45,13 +46,13 @@ export const fetchShopifyStoreDetails = async (req, res) => {
 };
 
 export const fetchShopifyProducts = async (req, res) => {
-    const { storeId } = req.params;
-    const userId = req.userId;
+    const { requestingUserId, storeId } = req.params;
     try {
         const store = await Store.findById(storeId);
         if (!store) return res.status(404).send('Store not found.');
-        if (!store.users.includes(userId)) {
-            return res.status(404).json({ message: 'You do not have access to the store.' });
+
+        if (!store.users.includes(requestingUserId)) {
+            return res.status(401).json({ message: 'User do not have access to the store.' });
         }
 
         const shopify = shopifyApi({
@@ -75,13 +76,13 @@ export const fetchShopifyProducts = async (req, res) => {
 };
 
 export const fetchShopifyCustomers = async (req, res) => {
-    const { storeId } = req.params;
-    const userId = req.userId;
+    const { requestingUserId, storeId } = req.params;
     try {
         const store = await Store.findById(storeId);
         if (!store) return res.status(404).send('Store not found.');
-        if (!store.users.includes(userId)) {
-            return res.status(404).json({ message: 'You do not have access to the store.' });
+
+        if (!store.users.includes(requestingUserId)) {
+            return res.status(401).json({ message: 'User do not have access to the store.' });
         }
 
         const shopify = shopifyApi({
@@ -105,14 +106,14 @@ export const fetchShopifyCustomers = async (req, res) => {
 };
 
 export const fetchShopifyOrders = async (req, res) => {
-    const { storeId } = req.params;
-    const userId = req.userId;
+    const { requestingUserId, storeId } = req.params;
 
     try {
         const store = await Store.findById(storeId);
         if (!store) return res.status(404).send('Store not found.');
-        if (!store.users.includes(userId)) {
-            return res.status(404).json({ message: 'You do not have access to the store.' });
+
+        if (!store.users.includes(requestingUserId)) {
+            return res.status(401).json({ success: false, message: 'You do not have access to the store.' });
         }
 
         const shopify = shopifyApi({
@@ -136,58 +137,102 @@ export const fetchShopifyOrders = async (req, res) => {
 };
 
 export const addShopifyStore = async (req, res) => {
-    const { apiKey, apiSecretKey, accessToken, storeName } = req.body;
-    const userId = req.userId;
+    const { requestingUserId, apiKey, apiSecretKey, accessToken, storeName } = req.body;
+
+    if (!apiKey || !apiSecretKey || !accessToken || !storeName) {
+        return res.status(400).json({ success: false, message: 'Missing data.' });
+    }
+
+    const session = await mongoose.startSession();
+    session.startTransaction();
 
     try {
-        const user = await User.findById(userId);
+        // find the requesting user
+        const requestingUser = await User.findById(requestingUserId);
 
-        const store = new Store({ apiKey, apiSecretKey, accessToken, storeName, users: [userId] });
-        await store.save();
+        // add new store
+        const store = await Store.create({ apiKey, apiSecretKey, accessToken, storeName, users: [requestingUserId] });
 
-        user.stores.push({ storeId: store._id, type: 'shopify', storeName: store.storeName });
-        await user.save();
+        // add store id to the user's store array
+        await requestingUser.updateOne({
+            $push: {
+                stores: {
+                    storeId: store._id,
+                    type: 'shopify',
+                    storeName: store.storeName,
+                },
+            },
+        });
 
-        res.status(201).json({ message: 'Store added successfully.', storeId: store._id });
+        await session.commitTransaction();
+        session.endSession();
+
+        res.status(201).json({ success: true, message: 'Store added successfully.', storeId: store._id });
     } catch (error) {
         console.error('Error adding store:', error);
+
+        await session.abortTransaction();
+        session.endSession();
+
         res.status(500).send('Error adding store.');
     }
 };
 
 export const addUserToStore = async (req, res) => {
-    const { username, email, password, storeId } = req.body;
-    if (!username || !email || !password || !storeId) {
+    const { requestingUserId, userIdToAdd, storeId } = req.body;
+
+    if (!userIdToAdd || !storeId) {
         return res.status(400).json({ message: 'Missing data.' });
     }
+
+    const session = await mongoose.startSession();
+    session.startTransaction();
+
     try {
-        const isUserAlreadyExisting = await User.findOne({ email });
-        if (isUserAlreadyExisting) {
-            return res.status(400).json({ message: 'User already exists.' });
+        // find the user
+        const user = await User.findById(userIdToAdd);
+        if (!user) {
+            throw { status: 404, message: 'Cannot find user to add.' };
         }
 
+        if (!user.createdBy.equals(requestingUserId)) {
+            throw { status: 401, message: 'requesting user cannot add the user.' };
+        }
+
+        // finds the store
         const store = await Store.findById(storeId);
-        if (!store) {
-            return res.status(404).json({ message: 'Store not found.' });
+        if (!store.users.includes(requestingUserId)) {
+            throw { status: 401, message: 'User does not have access to the store.' };
         }
 
-        const hashedPassword = await bcrypt.hash(password, 10);
-        const user = await User.create({
-            username,
-            email,
-            password: hashedPassword,
-            stores: { storeId: [store._id], type: 'shopify', storeName: store.storeName },
-        });
+        // checks if the user is already added to the store
+        if (store.users.includes(userIdToAdd)) {
+            throw { status: 400, message: 'User already added to store.' };
+        }
 
-        await Store.findByIdAndUpdate(storeId, { $push: { users: user._id } });
+        // add user id to the store's users array
+        await store.updateOne({ $push: { users: user._id } });
 
-        return res.status(200).json({
+        // adds the store id to the user's stores array
+        await user.updateOne({ $push: { stores: store._id } });
+
+        // commit the transaction
+        await session.commitTransaction();
+        session.endSession();
+        console.log([...store.users, userIdToAdd]);
+        return res.status(201).json({
             success: true,
-            message: 'User created and store added successfully.',
-            user: user,
+            message: 'User added to the store successfully.',
+            storeUsers: [...store.users, userIdToAdd],
         });
     } catch (err) {
         console.error(err);
-        return res.status(500).json({ message: 'Error adding user to store.' });
+
+        await session.abortTransaction();
+        session.endSession();
+
+        const status = err.status || 500;
+        const message = err.message || 'Error adding ';
+        return res.status(status).json({ success: false, message });
     }
 };

@@ -20,6 +20,8 @@ import GlobalAndCompliancePage from './pages/GlobalAndCompliancePage';
 import SecurityPage from './pages/SecurityPage';
 import DeveloperToolsPage from './pages/DeveloperToolsPage';
 import SupportPage from './pages/SupportPage';
+import TeamPage from './pages/TeamPage';
+import Notification from './components/Notification';
 
 function ProtectedRoutes({ user, loading }) {
     if (loading) return 'Loading...';
@@ -43,16 +45,16 @@ function AuthRedirect({ user, loading }) {
 export default function App() {
     const dispatch = useDispatch();
     const { user, loading } = useSelector(state => state.user);
-    console.log("User",user);
 
     useEffect(() => {
         if (!user) {
             dispatch(verifyUserToken());
         }
     }, [user]);
-
+    // on refresh return to the last page
     return (
         <main className="app">
+            <Notification />
             <Routes>
                 <Route path="/" element={<HomePage />} />
                 <Route path="/auth" element={<AuthRedirect user={user} loading={loading} />}>
@@ -75,6 +77,7 @@ export default function App() {
                     <Route path="/developer-tools" element={<DeveloperToolsPage />} />
                     <Route path="/support" element={<SupportPage />} />
                     <Route path="/profile" element={<ProfilePage />} />
+                    <Route path="/team" element={<TeamPage />} />
                     <Route path="*" element={<PageNotFound />} />
                 </Route>
             </Routes>

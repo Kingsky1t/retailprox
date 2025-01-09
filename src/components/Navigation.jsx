@@ -18,7 +18,7 @@ import {
 import logo from '../assets/RetailProX logo.png';
 import { useDispatch, useSelector } from 'react-redux';
 import { changeActiveStore, logout } from '../redux/UserSlice';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import smallLogo from '../assets/retailprox-logo.svg';
 
 export default function Navigation() {
@@ -35,7 +35,10 @@ export default function Navigation() {
     const toggleDropdown = () => {
         setDropdownOpen(prev => !prev);
     };
-    console.log(activeStore);
+
+    useEffect(() => {
+        setDropdownOpen(false);
+    }, [location]);
     return (
         <div className="navigation-container">
             <h2 className="px-4 border-b">
@@ -43,10 +46,9 @@ export default function Navigation() {
                     <img src={logo} alt="RetailProX" />
                 </Link>
             </h2>
+
             <div>
-                <select 
-                    onChange={event => dispatch(changeActiveStore(event.target.value))} 
-                    className="flex w-full p-2 px-4 appearance-none cursor-pointer">
+                <select onChange={event => dispatch(changeActiveStore(event.target.value))} value={activeStore} className="flex w-full p-2 px-4 appearance-none cursor-pointer">
                     {stores.map(store => (
                         <option key={store.storeId} value={JSON.stringify(store)}>
                             {store.storeName}
@@ -54,6 +56,7 @@ export default function Navigation() {
                     ))}
                 </select>
             </div>
+
             <div className="flex flex-col my-2 items-start text-lg grow overflow-auto hide-scrollbar">
                 <Link to="/dashboard" className={`w-full px-8 py-3 hover:bg-highlight flex items-center justify-start gap-4 ${isActive('/dashboard')}`}>
                     <FaHome /> Dashboard
@@ -109,6 +112,7 @@ export default function Navigation() {
                     <FaHeadset /> Support
                 </Link>
             </div>
+
             <div className="border-t-[1px] border-white w-full relative p-2">
                 <div className="flex gap-2 items-center p-2 cursor-pointer" onClick={toggleDropdown}>
                     <div className="flex justify-center items-center border-white border-2 p-1 rounded-full  overflow-hidden">
@@ -120,8 +124,12 @@ export default function Navigation() {
                     </div>
                     <div>{dropdownOpen ? <FaCaretUp /> : <FaCaretDown />}</div>
                 </div>
+
                 {dropdownOpen && (
-                    <div className="absolute w-full bottom-[100%] border-y p-2 bg-background z-10">
+                    <div className="absolute w-full bottom-[100%] left-0 border-y p-2 bg-background z-10">
+                        <Link to="/team">
+                            <button className="w-full text-left px-4 py-2 hover:bg-highlight rounded">Team</button>
+                        </Link>
                         <Link to="/profile">
                             <button className="w-full text-left px-4 py-2 hover:bg-highlight rounded">Profile</button>
                         </Link>

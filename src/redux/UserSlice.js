@@ -38,7 +38,7 @@ export const verifyUserToken = createAsyncThunk('user/verify-user', async (_, th
         }
 
         const response = await axios.post(
-            api_url + '/user/verify-token',
+            api_url + '/user/verify-user',
             {},
             {
                 headers: {
