@@ -2,7 +2,6 @@ import { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { loginUser, registerUser } from '../redux/UserSlice';
 import logo from '../assets/RetailProX logo.png';
-import { Link } from 'react-router-dom';
 
 export default function AuthPage() {
     const [isShowLogin, setShowLogin] = useState(true);
@@ -39,7 +38,6 @@ function Login({ isShowLogin, setShowLogin }) {
 
     const handleFormSubmit = event => {
         event.preventDefault();
-        console.log(formData);
         dispatch(loginUser(formData));
     };
 

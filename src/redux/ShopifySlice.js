@@ -22,13 +22,14 @@ export const addShopifyStore = createAsyncThunk('shopify/add-store', async (stor
     }
 });
 
-export const addUserToShopifyStore = createAsyncThunk('shopify/add-user', async (data, thunkAPI) => {
+export const addUserToShopifyStore = createAsyncThunk('shopify/add-user-to-store', async (data, thunkAPI) => {
     try {
-        const response = await axios.post(api_url + '/shopify/add-user', data, {
+        const response = await axios.post(api_url + '/shopify/add-user-to-store', data, {
             headers: {
                 Authorization: `Bearer ${localStorage.getItem('retailprox_accesstoken')}`,
             },
         });
+        thunkAPI.dispatch(fetchShopifyStoreDetails(data.storeId));
         return response.data;
     } catch (err) {
         return thunkAPI.rejectWithValue(err.response.data);
@@ -36,11 +37,11 @@ export const addUserToShopifyStore = createAsyncThunk('shopify/add-user', async 
 });
 
 export const fetchShopifyStoreDetails = createAsyncThunk('shopify/fetch-store-details', async (storeId, thunkAPI) => {
-    console.log('called');
     try {
+        const token = localStorage.getItem('retailprox_accesstoken');
         const response = await axios.get(api_url + `/shopify/fetch-store-details/${storeId}`, {
             headers: {
-                Authorization: `Bearer ${localStorage.getItem('retailprox_accesstoken')}`,
+                Authorization: `Bearer ${token}`,
             },
         });
         return response.data;

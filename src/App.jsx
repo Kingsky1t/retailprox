@@ -21,6 +21,8 @@ import SecurityPage from './pages/SecurityPage';
 import DeveloperToolsPage from './pages/DeveloperToolsPage';
 import SupportPage from './pages/SupportPage';
 import AuthSuccessPage from './pages/AuthSuccessPage';
+import TeamPage from './pages/TeamPage';
+import Notification from './components/Notification';
 
 function ProtectedRoutes({ user, loading }) {
     if (loading) return 'Loading...';
@@ -44,7 +46,6 @@ function AuthRedirect({ user, loading }) {
 export default function App() {
     const dispatch = useDispatch();
     const { user, loading } = useSelector(state => state.user);
-    // console.log("User",user);
     const hasRun = useRef(false);
 
      useEffect(() => {
@@ -57,13 +58,14 @@ export default function App() {
             dispatch(verifyUserToken());
             console.log('Dispatching verifyUserToken');
         }
-
+       
         // Set the ref to true to prevent further runs of the effect
         hasRun.current = true;
-    }, [user, loading, dispatch]);
+      }, [user, loading, dispatch]);
 
     return (
         <main className="app">
+            <Notification />
             <Routes>
                 <Route path="/" element={<HomePage />} />
                 <Route path="/auth" element={<AuthRedirect user={user} loading={loading} />}>
@@ -87,6 +89,7 @@ export default function App() {
                     <Route path="/developer-tools" element={<DeveloperToolsPage />} />
                     <Route path="/support" element={<SupportPage />} />
                     <Route path="/profile" element={<ProfilePage />} />
+                    <Route path="/team" element={<TeamPage />} />
                     <Route path="*" element={<PageNotFound />} />
                 </Route>
             </Routes>

@@ -8,6 +8,6 @@ router.get('/fetch-products/:storeId', verifyAccessTokenMiddleware, fetchShopify
 router.get('/fetch-customers/:storeId', verifyAccessTokenMiddleware, fetchShopifyCustomers);
 router.get('/fetch-orders/:storeId', verifyAccessTokenMiddleware, fetchShopifyOrders);
 router.post('/add-store', verifyAccessTokenMiddleware, addShopifyStore);
-router.post('/add-user', verifyAccessTokenMiddleware, addUserToStore);
+router.post('/add-user-to-store', verifyAccessTokenMiddleware, addUserToStore);
 
 export default router;
